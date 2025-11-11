@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Employee extends Model
+{
+    use HasFactory;
+
+    protected $primaryKey = 'id_emp'; // use id_emp as PK
+    public $incrementing = true; // auto increment
+    protected $fillable = ['jabatan_id', 'nama', 'email', 'alamat','img'];
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class, 'jabatan_id');
+    }
+}
