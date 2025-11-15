@@ -11,5 +11,10 @@ class Employee extends Model
 
     protected $primaryKey = 'id_emp'; // pakai id_emp sebagai PK
     public $incrementing = true; // tetap auto increment
-    protected $fillable = ['jabatan_id', 'nama', 'email', 'alamat'];
+    protected $fillable = ['jabatan_id', 'nama', 'email', 'alamat','img'];
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class, 'jabatan_id');
+    }
 }

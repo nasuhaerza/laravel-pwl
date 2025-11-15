@@ -3,22 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Position;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
     public function index(){
-        $emp = Employee::all();
+        $emp = Employee::with('position')->get();
         return view('backend.employees.index', compact('emp'));
     }
 
      // Form tambah data
     public function create()
     {
-        return view('backend.employees.create');
+        $positions = Position::all(); // ambil semua data posisi
+        return view('backend.employees.create', compact('positions'));
     }
 
     // Simpan data baru
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'jabatan_id' => 'required',
+    //         'nama' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:employees,email',
+    //         'alamat' => 'nullable|string',
+    //     ]);
+
+    //     Employee::create($request->all());
+
+    //     return redirect()->route('emp')->with('success', 'Data pegawai berhasil ditambahkan.');
+    // }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -26,12 +42,31 @@ class EmployeeController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:employees,email',
             'alamat' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Employee::create($request->all());
+        $data = [
+            'jabatan_id' => $request->jabatan_id,
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'alamat' => $request->alamat,
+        ];
+
+        // Upload foto
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('image'), $namaFile);
+
+            // Pastikan field di database adalah 'img' atau ubah sesuai field aslinya
+            $data['img'] = $namaFile;
+        }
+
+        Employee::create($data);
 
         return redirect()->route('emp')->with('success', 'Data pegawai berhasil ditambahkan.');
     }
+
 
     // Hapus data
     public function delete($id)
@@ -55,15 +90,40 @@ class EmployeeController extends Controller
             'email' => 'required|email|unique:employees,email,' . $id . ',id_emp',
             'alamat' => 'nullable|string',
             'jabatan_id' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $employee = Employee::findOrFail($id);
-        $employee->update([
+        $data = [
             'nama' => $request->nama,
             'email' => $request->email,
             'alamat' => $request->alamat,
             'jabatan_id' => $request->jabatan_id,
-        ]);
+        ];
+
+        // Jika ada foto baru diupload
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama kalau ada
+            if ($employee->img && file_exists(public_path('image/' . $employee->img))) {
+                unlink(public_path('image/' . $employee->img));
+            }
+
+            // Upload foto baru
+            $file = $request->file('foto');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('image'), $namaFile);
+
+            $data['img'] = $namaFile; // sesuaikan dengan nama kolom di DB
+        }
+
+        $employee->update($data);
+
+        // $employee->update([
+        //     'nama' => $request->nama,
+        //     'email' => $request->email,
+        //     'alamat' => $request->alamat,
+        //     'jabatan_id' => $request->jabatan_id,
+        // ]);
 
         return redirect()->route('emp')->with('success', 'Data pegawai berhasil diperbarui.');
     }

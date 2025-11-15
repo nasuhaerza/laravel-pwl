@@ -35,7 +35,7 @@
                         <a href="{{ route('emp') }}" class="nav-link text-dark">Pegawai</a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="{{ route('emp') }}" class="nav-link text-dark">Jabatan</a>
+                        <a href="{{ route('position') }}" class="nav-link text-dark">Jabatan</a>
                     </li>
                     <li class="nav-item mb-2">
                         <a href="/payroll" class="nav-link text-dark">Payroll</a>

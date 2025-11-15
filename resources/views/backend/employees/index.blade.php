@@ -19,6 +19,7 @@
             <thead class="table-light">
                 <tr>
                     <th>ID</th>
+                    <th>Foto</th>
                     <th>Nama</th>
                     <th>Email</th>
                     <th>Alamat</th>
@@ -30,10 +31,20 @@
                 @forelse ($emp as $p)
                 <tr>
                     <td>{{ $p->id_emp }}</td>
+                    <td>
+                        @if ($p->img)
+                            <img src="{{ asset('image/' . $p->img) }}"
+                                 alt="Foto {{ $p->nama }}"
+                                 width="60" height="60"
+                                 class="rounded-circle border">
+                        @else
+                            <span class="text-muted">Tidak ada</span>
+                        @endif
+                    </td>
                     <td>{{ $p->nama }}</td>
                     <td>{{ $p->email }}</td>
                     <td>{{ $p->alamat }}</td>
-                    <td>{{ $p->jabatan_id }}</td>
+                    <td>{{ $p->position->nama_jabatan ?? '-' }}</td>
                     <td>
 
                         <a href="{{ route('emp_edit', $p->id_emp) }}" class="btn btn-warning btn-sm">Edit</a>
