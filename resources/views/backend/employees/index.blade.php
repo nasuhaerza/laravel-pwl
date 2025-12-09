@@ -34,7 +34,7 @@
                     <td>
                         @if ($p->img)
                             <img src="{{ asset('image/' . $p->img) }}"
-                                 alt="Foto {{ $p->nama }}"
+                                 alt="foto {{ $p->nama }}"
                                  width="60" height="60"
                                  class="rounded-circle border">
                         @else
